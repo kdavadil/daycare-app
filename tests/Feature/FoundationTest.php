@@ -14,7 +14,12 @@ class FoundationTest extends TestCase
 
     public function test_foundation_renders_without_exposing_account_registration(): void
     {
-        $this->get('/')->assertOk()->assertSee('Sibol')->assertSee('About');
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Sibol')
+            ->assertSee('About')
+            ->assertSee('Maya is checked in');
+
         $this->get('/register')->assertNotFound();
     }
 
