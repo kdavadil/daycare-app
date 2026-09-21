@@ -38,3 +38,6 @@ Thumbs.db
 # Local planning history is not published to the public repository.
 /docs/conversation-archive.md
 /docs/project-context.md
+
+# Private Mac hosting runtime and backups
+/.hosting/
