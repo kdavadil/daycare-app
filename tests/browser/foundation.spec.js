@@ -5,6 +5,9 @@ test('mobile foundation performs a Livewire request without overflow', async ({ 
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'A little space to grow.' })).toBeVisible();
+  await page.getByRole('link', { name: 'Sign in' }).click();
+  await expect(page.getByRole('heading', { name: 'Welcome back to Sibol.' })).toBeVisible();
+  await page.goto('/');
   await expect(page.getByRole('link', { name: /Roster/ })).toBeVisible();
   await page.getByRole('link', { name: /Roster/ }).click();
   await expect(page.getByRole('heading', { name: 'Little Seeds Preschool' })).toBeVisible();

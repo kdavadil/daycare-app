@@ -1,9 +1,14 @@
 <section class="overflow-hidden rounded-[2rem] border border-[#E6DFD2] bg-white shadow-sm">
     <div class="flex items-center justify-between px-6 py-5">
         <x-brand-mark />
-        <a href="{{ route('about') }}" class="rounded-xl border border-[#E6DFD2] px-4 py-2 text-sm font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
-            About
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('about') }}" class="rounded-xl border border-[#E6DFD2] px-4 py-2 text-sm font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                About
+            </a>
+            <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-[#286446] px-4 py-2 text-sm font-semibold text-white underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                {{ auth()->check() ? 'Dashboard' : 'Sign in' }}
+            </a>
+        </div>
     </div>
 
     <div class="border-y border-[#E6DFD2] bg-[#F8F7F2] px-6 py-7">
