@@ -3,6 +3,10 @@
 namespace Tests\Feature;
 
 use App\Livewire\Foundation;
+use App\Models\AttendanceRecord;
+use App\Models\Child;
+use App\Models\School;
+use App\Models\SchoolClass;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
@@ -14,6 +18,24 @@ class FoundationTest extends TestCase
 
     public function test_foundation_renders_without_exposing_account_registration(): void
     {
+        $school = School::factory()->create(['slug' => 'little-seeds-preschool']);
+        $class = SchoolClass::factory()->create(['school_id' => $school->id]);
+        $child = Child::factory()->create([
+            'school_id' => $school->id,
+            'school_class_id' => $class->id,
+            'first_name' => 'Maya',
+            'last_name' => 'Dela Cruz',
+            'preferred_name' => 'Maya',
+        ]);
+
+        AttendanceRecord::factory()->create([
+            'school_id' => $school->id,
+            'school_class_id' => $class->id,
+            'child_id' => $child->id,
+            'type' => AttendanceRecord::CheckIn,
+            'occurred_at' => now('Asia/Manila')->setTime(8, 4),
+        ]);
+
         $this->get('/')
             ->assertOk()
             ->assertSee('Sibol')

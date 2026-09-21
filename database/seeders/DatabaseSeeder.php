@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AttendanceRecord;
 use App\Models\Child;
 use App\Models\Guardian;
 use App\Models\School;
@@ -104,5 +105,16 @@ class DatabaseSeeder extends Seeder
         $lia->guardians()->syncWithoutDetaching([
             $camille->id => ['relationship' => 'Mother', 'is_primary' => true, 'can_pick_up' => true],
         ]);
+
+        AttendanceRecord::query()->updateOrCreate(
+            ['child_id' => $maya->id, 'occurred_at' => now('Asia/Manila')->setTime(8, 4)],
+            [
+                'school_id' => $school->id,
+                'school_class_id' => $sampaguita->id,
+                'type' => AttendanceRecord::CheckIn,
+                'actor_name' => 'Teacher Ana Cruz',
+                'note' => 'Demo check-in',
+            ],
+        );
     }
 }

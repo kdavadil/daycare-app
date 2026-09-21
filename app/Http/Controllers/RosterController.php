@@ -11,7 +11,7 @@ class RosterController extends Controller
     {
         $school = School::query()
             ->with([
-                'classes' => ['children.guardians', 'staffMembers'],
+                'classes' => ['children.guardians', 'children.latestAttendanceRecord', 'staffMembers'],
                 'staffMembers',
             ])
             ->where('slug', 'little-seeds-preschool')

@@ -9,7 +9,10 @@ test('mobile foundation performs a Livewire request without overflow', async ({ 
   await page.getByRole('link', { name: /Roster/ }).click();
   await expect(page.getByRole('heading', { name: 'Little Seeds Preschool' })).toBeVisible();
   await expect(page.getByText('Teacher Ana Cruz')).toBeVisible();
-  await page.getByRole('link', { name: 'Home' }).click();
+  await page.getByRole('link', { name: 'Open attendance' }).click();
+  await expect(page.getByRole('heading', { name: 'Check children in and out' })).toBeVisible();
+  await expect(page.getByText('Maya Dela Cruz')).toBeVisible();
+  await page.getByRole('link', { name: /Sibol/ }).click();
   await page.getByRole('button', { name: 'Change language' }).click();
   await expect(page.getByRole('heading', { name: 'Munting espasyo para lumago.' })).toBeVisible();
   await page.setViewportSize({ width: 320, height: 740 });

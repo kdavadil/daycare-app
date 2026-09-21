@@ -58,13 +58,17 @@
 
                         <div class="mt-4 grid gap-3">
                             @foreach ($class->children as $child)
+                                @php
+                                    $isCheckedIn = $child->latestAttendanceRecord?->type === \App\Models\AttendanceRecord::CheckIn;
+                                @endphp
+
                                 <article class="rounded-xl border border-[#E6DFD2] p-4">
                                     <div class="flex items-start justify-between gap-4">
                                         <div>
                                             <h3 class="text-base font-semibold text-[#2E2A24]">{{ $child->preferred_name ?? $child->first_name }} {{ $child->last_name }}</h3>
                                             <p class="mt-1 text-sm text-[#6D665C]">Guardian: {{ $child->guardians->map(fn ($guardian) => $guardian->first_name.' '.$guardian->last_name)->join(', ') }}</p>
                                         </div>
-                                        <span class="rounded-full bg-[#F4C95D] px-3 py-1.5 text-xs font-semibold text-[#3B3014]">{{ ucfirst($child->status) }}</span>
+                                        <span class="rounded-full {{ $isCheckedIn ? 'bg-[#E9F3EE] text-[#286446]' : 'bg-[#F4C95D] text-[#3B3014]' }} px-3 py-1.5 text-xs font-semibold">{{ $isCheckedIn ? 'In school' : ucfirst($child->status) }}</span>
                                     </div>
                                 </article>
                             @endforeach
@@ -72,6 +76,7 @@
                     </section>
                 @endforeach
 
+                <a href="{{ route('attendance.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#286446] px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open attendance</a>
                 <p class="text-xs leading-5 text-[#6D665C]">Preview roster only. Editing, invitations, and account permissions come next.</p>
             </div>
         </section>

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['school_id', 'school_class_id', 'first_name', 'last_name', 'preferred_name', 'birthdate', 'status'])]
 class Child extends Model
@@ -39,6 +41,27 @@ class Child extends Model
         return $this->belongsToMany(Guardian::class)
             ->withPivot(['relationship', 'is_primary', 'can_pick_up'])
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<AttendanceRecord, $this>
+     */
+    public function attendanceRecords(): HasMany
+    {
+        return $this->hasMany(AttendanceRecord::class);
+    }
+
+    /**
+     * @return HasOne<AttendanceRecord, $this>
+     */
+    public function latestAttendanceRecord(): HasOne
+    {
+        return $this->hasOne(AttendanceRecord::class)->latestOfMany('occurred_at');
+    }
+
+    public function isCheckedIn(): bool
+    {
+        return $this->latestAttendanceRecord?->type === AttendanceRecord::CheckIn;
     }
 
     /**
