@@ -1,0 +1,89 @@
+name: CI
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: Verify and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: sibol_testing
+          POSTGRES_USER: sibol
+          POSTGRES_PASSWORD: local-sibol-only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U sibol -d sibol_testing"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: sibol_testing
+      DB_USERNAME: sibol
+      DB_PASSWORD: local-sibol-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, mbstring, intl, gd, zip, bcmath, pcntl
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install locked dependencies
+        run: |
+          composer validate --strict
+          composer install --no-interaction --prefer-dist --no-progress
+          npm ci
+      - name: Prepare test environment
+        run: |
+          cp .env.testing.example .env
+          cp .env.testing.example .env.testing
+          php artisan key:generate --no-interaction
+          php artisan key:generate --env=testing --no-interaction
+          php artisan migrate --force --no-interaction
+      - name: Validate configuration and scripts
+        run: |
+          docker compose config --quiet
+          for script in scripts/*.sh deployment/*.sh; do bash -n "$script"; done
+      - name: Formatting and dependency advisories
+        run: |
+          composer lint
+          composer audit --locked --no-interaction
+          npm audit --audit-level=high
+      - name: Compile frontend and run PostgreSQL tests
+        run: |
+          npm run build
+          composer test
+      - name: Mobile browser smoke test
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - name: Build deployable package
+        if: github.event_name != 'pull_request'
+        run: bash scripts/package-release.sh "$GITHUB_SHA"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: sibol-release-${{ github.sha }}
+          path: |
+            artifacts/sibol-release.tar.gz
+            artifacts/sibol-release.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,17 @@
+[Unit]
+Description=Sibol queue (%i)
+After=network.target postgresql.service
+[Service]
+User=sibol
+Group=www-data
+WorkingDirectory=/srv/sibol/%i/current
+ExecStart=/usr/bin/php8.4 artisan queue:work --sleep=2 --tries=3 --timeout=60 --max-time=3600
+Restart=always
+RestartSec=5
+TimeoutStopSec=90
+KillSignal=SIGTERM
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+[Install]
+WantedBy=multi-user.target

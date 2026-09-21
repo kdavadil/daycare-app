@@ -1,0 +1,30 @@
+# Template: replace DOMAIN, ENVIRONMENT, and TLS certificate paths before enabling.
+server {
+    listen 80;
+    server_name DOMAIN;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name DOMAIN;
+    ssl_certificate /etc/letsencrypt/live/DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/DOMAIN/privkey.pem;
+    root /srv/sibol/ENVIRONMENT/current/public;
+    index index.php;
+    charset utf-8;
+    client_max_body_size 10m;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+    location = /index.php {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_hide_header X-Powered-By;
+    }
+    location ~ \.php$ { return 404; }
+    location ~ /\.(?!well-known).* { deny all; }
+    # Child photos and payment proofs must never be served as public files.
+    location /storage/ { return 404; }
+}

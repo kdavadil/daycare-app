@@ -1,0 +1,82 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment (must be configured in repository settings)
+        type: choice
+        options: [staging, production]
+        default: staging
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy only the main branch
+        env:
+          REF: ${{ github.ref }}
+        run: test "$REF" = refs/heads/main
+  verify:
+    needs: guard
+    uses: ./.github/workflows/ci.yml
+  deploy:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: ${{ inputs.environment }}
+    env:
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      APP_URL: ${{ vars.APP_URL }}
+      DEPLOY_ENV: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: sibol-release-${{ github.sha }}
+          path: artifacts
+      - name: Verify required configuration
+        run: |
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_PATH APP_URL; do
+            test -n "${!name}" || { echo "Missing environment variable: $name"; exit 1; }
+          done
+          [[ "$DEPLOY_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          [[ "$DEPLOY_PORT" =~ ^[0-9]{1,5}$ ]]
+          [[ "$DEPLOY_PATH" =~ ^/srv/sibol/(staging|production)$ ]]
+          test "$DEPLOY_PATH" = "/srv/sibol/$DEPLOY_ENV"
+          [[ "$APP_URL" =~ ^https://[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+      - name: Configure verified SSH connection
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          test -n "$SSH_KEY" && test -n "$KNOWN_HOSTS"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/sibol_deploy
+          chmod 600 ~/.ssh/sibol_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+      - name: Transfer and activate the tested release
+        run: |
+          cd artifacts
+          sha256sum -c sibol-release.tar.gz.sha256
+          SSH_ARGS=(-i "$HOME/.ssh/sibol_deploy" -p "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes)
+          TARGET="$DEPLOY_USER@$DEPLOY_HOST"
+          REMOTE_ARCHIVE="$DEPLOY_PATH/incoming/$GITHUB_SHA.tar.gz"
+          ssh "${SSH_ARGS[@]}" "$TARGET" "test -d '$DEPLOY_PATH/incoming' && test -f '$DEPLOY_PATH/shared/.env'"
+          scp -i "$HOME/.ssh/sibol_deploy" -P "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes sibol-release.tar.gz "$TARGET:$REMOTE_ARCHIVE"
+          DIGEST=$(sha256sum sibol-release.tar.gz | cut -d ' ' -f 1)
+          ssh "${SSH_ARGS[@]}" "$TARGET" "bash -s -- '$DEPLOY_PATH' '$GITHUB_SHA' '$DIGEST' '$APP_URL' '$DEPLOY_ENV'" < ../deployment/activate-release.sh
+      - name: Remove ephemeral SSH key
+        if: always()
+        run: rm -f ~/.ssh/sibol_deploy
