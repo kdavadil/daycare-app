@@ -14,8 +14,17 @@ class FoundationTest extends TestCase
 
     public function test_foundation_renders_without_exposing_account_registration(): void
     {
-        $this->get('/')->assertOk()->assertSee('Sibol');
+        $this->get('/')->assertOk()->assertSee('Sibol')->assertSee('About');
         $this->get('/register')->assertNotFound();
+    }
+
+    public function test_about_page_renders_placeholder_origin_story(): void
+    {
+        $this->get('/about')
+            ->assertOk()
+            ->assertSee('About Sibol')
+            ->assertSee('placeholder origin copy')
+            ->assertSee('Do not enter or publish real child, parent, staff, or payment information yet.');
     }
 
     public function test_livewire_round_trip_changes_the_language(): void
