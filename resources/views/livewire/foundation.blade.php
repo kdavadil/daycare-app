@@ -33,10 +33,10 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-            <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
+            <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
                 <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">Next</p>
-                <p class="mt-2 text-sm font-semibold text-[#2E2A24]">Journal</p>
-            </div>
+                <p class="mt-2 text-sm font-semibold text-[#2E2A24]">Roster</p>
+            </a>
             <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
                 <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">Soon</p>
                 <p class="mt-2 text-sm font-semibold text-[#2E2A24]">Fees</p>
