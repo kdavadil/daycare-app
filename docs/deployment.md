@@ -8,7 +8,7 @@ CI is defined in `.github/workflows/ci.yml`. CD is defined in `.github/workflows
 
 ## CI checks
 
-Pushes and pull requests run Composer validation/install, npm ci, Compose/script validation, Pint, Composer audit, npm high/critical advisory checks, a frontend build, PostgreSQL-backed tests, and a Chromium mobile smoke test. Dependency advisory failures require review; do not blindly suppress them.
+Pushes and pull requests run Composer validation/install, npm ci, Compose/script validation, Pint, Composer audit, npm high/critical advisory checks, a frontend build, PostgreSQL-backed tests, a Chromium mobile smoke test, and disposable-container deployment tests for activation, checksum failure, migration failure, and unhealthy-release rollback. The deployment tests mock PHP/HTTPS/systemd and do not replace a staging-server rehearsal. Dependency advisory failures require review; do not blindly suppress them.
 
 For branch builds, `scripts/package-release.sh` creates a tarball and checksum containing production Composer dependencies, compiled assets, application code, and a REVISION marker. It uses an allowlist to omit credentials, node_modules, tests, chat archives, mock-ups, and development databases. Artifacts expire after 14 days.
 

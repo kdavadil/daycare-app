@@ -62,6 +62,8 @@ jobs:
         run: |
           docker compose config --quiet
           for script in scripts/*.sh deployment/*.sh; do bash -n "$script"; done
+      - name: Deployment activation and rollback tests
+        run: docker run --rm -e SIBOL_DISPOSABLE_TEST=1 -v "$PWD:/workspace:ro" --entrypoint bash postgres:17-alpine /workspace/tests/deployment/activation.sh
       - name: Formatting and dependency advisories
         run: |
           composer lint
