@@ -7,7 +7,9 @@ use App\Models\Child;
 use App\Models\Guardian;
 use App\Models\School;
 use App\Models\SchoolClass;
+use App\Models\SchoolUserMembership;
 use App\Models\StaffMember;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -105,6 +107,51 @@ class DatabaseSeeder extends Seeder
         $lia->guardians()->syncWithoutDetaching([
             $camille->id => ['relationship' => 'Mother', 'is_primary' => true, 'can_pick_up' => true],
         ]);
+
+        $demoUsers = [
+            [
+                'email' => 'admin.mia@sibol.test',
+                'name' => 'Mia Reyes',
+                'role' => 'administrator',
+                'source' => $adminMia,
+            ],
+            [
+                'email' => 'teacher.ana@sibol.test',
+                'name' => 'Teacher Ana Cruz',
+                'role' => 'teacher',
+                'source' => $teacherAna,
+            ],
+            [
+                'email' => 'rose.delacruz@sibol.test',
+                'name' => 'Rose Dela Cruz',
+                'role' => 'guardian',
+                'source' => $rose,
+            ],
+        ];
+
+        foreach ($demoUsers as $demoUser) {
+            $user = User::query()->updateOrCreate(
+                ['email' => $demoUser['email']],
+                [
+                    'name' => $demoUser['name'],
+                    'password' => null,
+                    'email_verified_at' => now(),
+                ],
+            );
+
+            SchoolUserMembership::query()->updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'school_id' => $school->id,
+                    'role' => $demoUser['role'],
+                ],
+                [
+                    'status' => 'active',
+                    'source_type' => $demoUser['source']::class,
+                    'source_id' => $demoUser['source']->id,
+                ],
+            );
+        }
 
         AttendanceRecord::query()->updateOrCreate(
             ['child_id' => $maya->id, 'occurred_at' => now('Asia/Manila')->setTime(8, 4)],

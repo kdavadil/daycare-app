@@ -41,4 +41,23 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'demo_login' => [
+        'enabled' => env('DEMO_LOGIN_ENABLED', false),
+        'pin' => env('DEMO_LOGIN_PIN'),
+        'personas' => [
+            'admin' => [
+                'label' => 'Admin',
+                'email' => 'admin.mia@sibol.test',
+            ],
+            'teacher' => [
+                'label' => 'Teacher',
+                'email' => 'teacher.ana@sibol.test',
+            ],
+            'parent' => [
+                'label' => 'Parent',
+                'email' => 'rose.delacruz@sibol.test',
+            ],
+        ],
+    ],
+
 ];

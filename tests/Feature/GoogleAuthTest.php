@@ -170,7 +170,8 @@ class GoogleAuthTest extends TestCase
             ->assertOk()
             ->assertSee('Teacher')
             ->assertSee('Little Seeds Preschool')
-            ->assertSee('Open roster');
+            ->assertSee('Take attendance')
+            ->assertSee('View class roster');
     }
 
     public function test_user_can_sign_out(): void

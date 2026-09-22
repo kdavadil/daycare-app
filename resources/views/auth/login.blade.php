@@ -33,7 +33,37 @@
                     <p class="rounded-2xl bg-[#FFF1C7] p-4 text-sm font-semibold leading-6 text-[#3B3014]" role="status">Google sign-in is ready in code. Add Google OAuth credentials to enable the button.</p>
                 @endif
 
-                <p class="text-xs leading-5 text-[#6D665C]">No passwords are stored for Google-only accounts. Access control by school role comes next.</p>
+                <p class="text-xs leading-5 text-[#6D665C]">No passwords are stored for Google-only accounts. Access control is matched by school role.</p>
+
+                @if (config('services.demo_login.enabled'))
+                    <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
+                        <p class="text-sm font-semibold text-[#2E2A24]">Demo persona login</p>
+                        <p class="mt-1 text-xs leading-5 text-[#6D665C]">Use this only for pilot testing on the temporary host.</p>
+
+                        @error('pin')
+                            <p class="mt-3 rounded-xl bg-[#FFF1C7] p-3 text-xs font-semibold text-[#3B3014]" role="alert">{{ $message }}</p>
+                        @enderror
+
+                        <form method="POST" action="{{ route('auth.demo') }}" class="mt-4 grid gap-3">
+                            @csrf
+                            <label class="grid gap-1 text-xs font-semibold text-[#6D665C]">
+                                Persona
+                                <select name="persona" class="min-h-11 rounded-xl border border-[#E6DFD2] bg-white px-3 text-sm text-[#2E2A24]">
+                                    @foreach (config('services.demo_login.personas') as $key => $persona)
+                                        <option value="{{ $key }}" @selected(old('persona') === $key)>{{ $persona['label'] }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+
+                            <label class="grid gap-1 text-xs font-semibold text-[#6D665C]">
+                                Demo PIN
+                                <input name="pin" type="password" inputmode="text" class="min-h-11 rounded-xl border border-[#E6DFD2] bg-white px-3 text-sm text-[#2E2A24]" autocomplete="off">
+                            </label>
+
+                            <button type="submit" class="min-h-11 rounded-xl bg-[#2E2A24] px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open demo dashboard</button>
+                        </form>
+                    </div>
+                @endif
             </div>
         </section>
     </main>

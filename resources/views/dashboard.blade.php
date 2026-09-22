@@ -35,14 +35,40 @@
                             <article class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
                                 <p class="text-xs font-semibold tracking-widest text-[#286446] uppercase">{{ $membership->displayRole() }}</p>
                                 <h2 class="mt-2 text-lg font-semibold text-[#2E2A24]">{{ $membership->school->name }}</h2>
-                                <p class="mt-2 text-sm leading-6 text-[#6D665C]">Access matched from your school records. Your workspace will expand as staff and family tools are enabled.</p>
+                                <p class="mt-2 text-sm leading-6 text-[#6D665C]">Access matched from your school records. Your workspace now shows the tools that fit this persona.</p>
                             </article>
                         @endforeach
                     </div>
 
                     <div class="grid gap-3">
-                        <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open roster</a>
-                        <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open attendance</a>
+                        @if ($isAdmin)
+                            <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Manage roster</a>
+                            <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Review attendance</a>
+                            <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
+                                <p class="text-sm font-semibold text-[#2E2A24]">Invite staff and families</p>
+                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for the next admin story.</p>
+                            </div>
+                        @endif
+
+                        @if ($isTeacher)
+                            <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Take attendance</a>
+                            <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class roster</a>
+                            <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
+                                <p class="text-sm font-semibold text-[#2E2A24]">Post daily update</p>
+                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for photos, naps, meals, and notes.</p>
+                            </div>
+                        @endif
+
+                        @if ($isGuardian)
+                            <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
+                                <p class="text-sm font-semibold text-[#2E2A24]">Maya Dela Cruz</p>
+                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Checked in today at Little Seeds Preschool.</p>
+                            </div>
+                            <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
+                                <p class="text-sm font-semibold text-[#2E2A24]">Pickup notes</p>
+                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for verified pickup contacts and teacher messages.</p>
+                            </div>
+                        @endif
                     </div>
                 @else
                     <div class="rounded-2xl bg-[#FFF1C7] p-4">
