@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Guardian;
+use App\Models\School;
+use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
@@ -68,8 +71,17 @@ class GoogleAuthTest extends TestCase
             ->assertRedirect('https://accounts.google.com/o/oauth2/auth');
     }
 
-    public function test_google_callback_creates_user_and_logs_them_in(): void
+    public function test_google_callback_creates_user_logs_them_in_and_links_staff_membership(): void
     {
+        $school = School::factory()->create(['name' => 'Little Seeds Preschool']);
+        $staffMember = StaffMember::factory()->create([
+            'school_id' => $school->id,
+            'name' => 'Teacher Ana Cruz',
+            'email' => 'teacher.ana@sibol.test',
+            'role' => 'teacher',
+            'status' => 'active',
+        ]);
+
         $provider = Mockery::mock();
         $provider->shouldReceive('stateless')->once()->andReturnSelf();
         $provider->shouldReceive('user')
@@ -95,6 +107,70 @@ class GoogleAuthTest extends TestCase
             'google_id' => 'google-123',
             'avatar_url' => 'https://example.test/avatar.jpg',
         ]);
+        $this->assertDatabaseHas('school_user_memberships', [
+            'school_id' => $school->id,
+            'role' => 'teacher',
+            'status' => 'active',
+            'source_type' => StaffMember::class,
+            'source_id' => $staffMember->id,
+        ]);
+    }
+
+    public function test_google_callback_links_guardian_membership_by_email(): void
+    {
+        $school = School::factory()->create(['name' => 'Little Seeds Preschool']);
+        $guardian = Guardian::factory()->create([
+            'school_id' => $school->id,
+            'first_name' => 'Rose',
+            'last_name' => 'Dela Cruz',
+            'email' => 'rose.delacruz@sibol.test',
+        ]);
+
+        $provider = Mockery::mock();
+        $provider->shouldReceive('stateless')->once()->andReturnSelf();
+        $provider->shouldReceive('user')
+            ->once()
+            ->andReturn(SocialiteUser::fake([
+                'id' => 'google-guardian-123',
+                'name' => 'Rose Dela Cruz',
+                'email' => 'rose.delacruz@sibol.test',
+                'avatar' => null,
+            ]));
+
+        $socialite = Mockery::mock(SocialiteFactory::class);
+        $socialite->shouldReceive('driver')->once()->with('google')->andReturn($provider);
+
+        $this->app->instance(SocialiteFactory::class, $socialite);
+
+        $this->get('/auth/google/callback')
+            ->assertRedirect('/dashboard');
+
+        $this->assertDatabaseHas('school_user_memberships', [
+            'school_id' => $school->id,
+            'role' => 'guardian',
+            'status' => 'active',
+            'source_type' => Guardian::class,
+            'source_id' => $guardian->id,
+        ]);
+    }
+
+    public function test_dashboard_shows_linked_school_role(): void
+    {
+        $school = School::factory()->create(['name' => 'Little Seeds Preschool']);
+        $user = User::factory()->create(['name' => 'Teacher Ana Cruz']);
+
+        $user->schoolMemberships()->create([
+            'school_id' => $school->id,
+            'role' => 'teacher',
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Teacher')
+            ->assertSee('Little Seeds Preschool')
+            ->assertSee('Open roster');
     }
 
     public function test_user_can_sign_out(): void

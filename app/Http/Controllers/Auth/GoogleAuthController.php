@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guardian;
+use App\Models\SchoolUserMembership;
+use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +40,8 @@ class GoogleAuthController extends Controller
             ],
         );
 
+        $this->syncSchoolMemberships($user);
+
         Auth::login($user, remember: true);
 
         request()->session()->regenerate();
@@ -52,5 +57,45 @@ class GoogleAuthController extends Controller
         request()->session()->regenerateToken();
 
         return redirect()->route('login')->with('status', 'You have signed out of Sibol.');
+    }
+
+    private function syncSchoolMemberships(User $user): void
+    {
+        $email = str($user->email)->lower()->toString();
+
+        StaffMember::query()
+            ->whereRaw('lower(email) = ?', [$email])
+            ->where('status', 'active')
+            ->each(function (StaffMember $staffMember) use ($user): void {
+                SchoolUserMembership::query()->updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'school_id' => $staffMember->school_id,
+                        'role' => $staffMember->role,
+                    ],
+                    [
+                        'status' => 'active',
+                        'source_type' => StaffMember::class,
+                        'source_id' => $staffMember->id,
+                    ],
+                );
+            });
+
+        Guardian::query()
+            ->whereRaw('lower(email) = ?', [$email])
+            ->each(function (Guardian $guardian) use ($user): void {
+                SchoolUserMembership::query()->updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'school_id' => $guardian->school_id,
+                        'role' => 'guardian',
+                    ],
+                    [
+                        'status' => 'active',
+                        'source_type' => Guardian::class,
+                        'source_id' => $guardian->id,
+                    ],
+                );
+            });
     }
 }

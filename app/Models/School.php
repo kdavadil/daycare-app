@@ -45,4 +45,12 @@ class School extends Model
     {
         return $this->hasMany(StaffMember::class);
     }
+
+    /**
+     * @return HasMany<SchoolUserMembership, $this>
+     */
+    public function userMemberships(): HasMany
+    {
+        return $this->hasMany(SchoolUserMembership::class);
+    }
 }
