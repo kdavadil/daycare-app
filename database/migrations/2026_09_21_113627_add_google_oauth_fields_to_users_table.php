@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE users ALTER COLUMN password DROP NOT NULL');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE users ALTER COLUMN password DROP NOT NULL');
+        }
 
         Schema::table('users', function (Blueprint $table): void {
             $table->string('google_id')->nullable()->unique()->after('email_verified_at');
