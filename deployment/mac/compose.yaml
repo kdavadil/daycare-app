@@ -1,0 +1,62 @@
+name: sibol-host
+x-app: &app
+  image: sibol-host:${RELEASE_SHA:?Set release revision}
+  env_file: ../../.hosting/app.env
+  volumes:
+    - storage:/var/www/html/storage
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: 10m, max-file: "3"}
+services:
+  database:
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+    image: postgres:17-alpine
+    env_file: ../../.hosting/database.env
+    volumes:
+      - database:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U sibol -d sibol_host']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  web:
+    <<: *app
+    build:
+      context: ../../.hosting
+      dockerfile: ../deployment/mac/Dockerfile
+    ports: ['127.0.0.1:8080:80']
+    depends_on:
+      database: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, 'http://127.0.0.1/ready']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  queue:
+    <<: *app
+    user: www-data
+    command: [php, artisan, 'queue:work', '--sleep=3', '--tries=3', '--timeout=90']
+    depends_on:
+      web: {condition: service_healthy}
+  scheduler:
+    <<: *app
+    user: www-data
+    command: [php, artisan, 'schedule:work']
+    depends_on:
+      web: {condition: service_healthy}
+  tunnel:
+    image: cloudflare/cloudflared:2026.9.1
+    command: [tunnel, --no-autoupdate, --url, 'http://web:80']
+    restart: unless-stopped
+    depends_on:
+      web: {condition: service_healthy}
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+volumes:
+  database:
+  storage:

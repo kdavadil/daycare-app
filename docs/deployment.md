@@ -4,7 +4,7 @@
 
 Repository: https://github.com/kdavadil/daycare-app
 
-CI is defined in `.github/workflows/ci.yml`. CD is defined in `.github/workflows/deploy.yml`. No server hostname, operating system, domain, or SSH account has been supplied yet. The deployment files target a Linux VPS with systemd, Nginx, and PHP 8.4; confirm the actual server before using them. No production deployment has been performed.
+CI is defined in `.github/workflows/ci.yml`. CD is defined in `.github/workflows/deploy.yml`. The initial testing host is this Mac, using the isolated Docker stack below. The GitHub Deploy workflow targets a future Linux VPS with systemd, Nginx, and PHP 8.4; it does not deploy to the Mac.
 
 ## CI checks
 
@@ -86,3 +86,28 @@ Old releases are retained for rollback; configure deliberate cleanup after the p
 ## First deployment acceptance
 
 Verify domain/TLS, deployment environment settings/reviewer, host key, database isolation, restricted permissions, backup recovery, placeholder page, `/ready`, queue processing, scheduler service, and application logs. Run a staging deployment and a controlled failed-health rollback rehearsal before the first production deployment.
+
+## Mac testing host
+
+`deployment/mac/compose.yaml` runs the CI-built release with PHP 8.4/Apache, PostgreSQL 17, a queue worker, scheduler, and a Cloudflare Quick Tunnel. It uses the separate `sibol-host` Compose project and dedicated database/storage volumes. Development remains on port 8000; the hosted origin binds only to 127.0.0.1:8080. No database or SSH port is published.
+
+Private generated keys and database passwords live in ignored `.hosting/*.env` files (mode 600), never in Git or the Docker build context. The Docker context contains only the verified production release. Debugging is off, sessions are encrypted with secure cookies, and email currently logs locally rather than delivering messages. Apache treats requests as HTTPS because public TLS terminates at Cloudflare; use the HTTPS link to test sessions.
+
+From the repository directory:
+
+```sh
+bash scripts/host.sh status
+bash scripts/host.sh start
+bash scripts/host.sh link
+bash scripts/host.sh url https://YOUR-CURRENT-LINK.trycloudflare.com
+bash scripts/host.sh backup
+bash scripts/host.sh stop
+```
+
+After restarting the tunnel, retrieve its new link and apply it with `url`. The temporary address can change and has no uptime guarantee. Cloudflare documents Quick Tunnels as testing/development only: https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/
+
+Keep the Mac plugged in, awake with the lid open, connected to the internet, and Docker Desktop running. Containers restart when Docker restarts, but Docker must be started after login; this is not an unattended server boot setup. Do not delete Docker volumes or run `down -v`: those volumes contain hosted data.
+
+GitHub-hosted CI remains the build authority. Mac deployment is manual; no self-hosted GitHub runner executes public-repository jobs on this computer. The initial release is `c6d34b5db82857e1b0d8de203602ceeb95c4f30f`, from successful CI run `35554487476`. For an update, download the exact successful main-branch CI artifact into a clean staging directory, verify the supplied SHA-256 and REVISION, retain the old release/image, back up data, replace `.hosting/release`, update RELEASE_SHA in `.hosting/compose.env`, build with `docker compose --env-file .hosting/compose.env -f deployment/mac/compose.yaml build web`, then run `start` and verify `/ready` plus the public page. Do not copy development `.env`, `public/hot`, or development databases into the release. Database migrations require backward-compatible changes; switching images does not undo schema changes.
+
+The backup command exports PostgreSQL, private application files, and required encryption keys. Backups are local, sensitive, and are not disaster recovery until a secure copy is kept elsewhere. Take backups during a quiet period for consistency between uploads and database records. Before real childcare records are entered, finish authorization, establish a stable named tunnel/domain, and rehearse restoration and off-machine backups.
