@@ -27,6 +27,17 @@ class User extends Authenticatable
     }
 
     /**
+     * @param  array<int, string>  $roles
+     */
+    public function hasAnySchoolRole(array $roles): bool
+    {
+        return $this->schoolMemberships()
+            ->where('status', 'active')
+            ->whereIn('role', $roles)
+            ->exists();
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

@@ -15,6 +15,8 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->
 Route::post('/auth/demo', DemoPersonaController::class)->middleware('guest')->name('auth.demo');
 Route::post('/logout', [GoogleAuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
-Route::get('/roster', RosterController::class)->name('roster.index');
-Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
-Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+Route::middleware(['auth', 'school.role:administrator,teacher'])->group(function (): void {
+    Route::get('/roster', RosterController::class)->name('roster.index');
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+});

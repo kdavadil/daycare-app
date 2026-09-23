@@ -7,6 +7,7 @@ use App\Models\Child;
 use App\Models\School;
 use App\Models\SchoolClass;
 use App\Models\StaffMember;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,7 +27,8 @@ class AttendanceTest extends TestCase
             'occurred_at' => now('Asia/Manila')->setTime(8, 4),
         ]);
 
-        $this->get('/attendance')
+        $this->actingAs($this->userWithRole($school, 'teacher'))
+            ->get('/attendance')
             ->assertOk()
             ->assertSee('Check children in and out')
             ->assertSee('Maya Dela Cruz')
@@ -38,10 +40,11 @@ class AttendanceTest extends TestCase
     {
         [$school, $class, $child] = $this->createDemoRoster();
 
-        $this->post('/attendance', [
-            'child_id' => $child->id,
-            'type' => AttendanceRecord::CheckIn,
-        ])->assertRedirect();
+        $this->actingAs($this->userWithRole($school, 'teacher'))
+            ->post('/attendance', [
+                'child_id' => $child->id,
+                'type' => AttendanceRecord::CheckIn,
+            ])->assertRedirect();
 
         $this->assertDatabaseHas('attendance_records', [
             'school_id' => $school->id,
@@ -68,7 +71,7 @@ class AttendanceTest extends TestCase
 
     public function test_attendance_rejects_children_outside_the_demo_school(): void
     {
-        $this->createDemoRoster();
+        [$school] = $this->createDemoRoster();
         $otherSchool = School::factory()->create(['slug' => 'other-school']);
         $otherClass = SchoolClass::factory()->create(['school_id' => $otherSchool->id]);
         $otherChild = Child::factory()->create([
@@ -76,10 +79,27 @@ class AttendanceTest extends TestCase
             'school_class_id' => $otherClass->id,
         ]);
 
+        $this->actingAs($this->userWithRole($school, 'administrator'))
+            ->post('/attendance', [
+                'child_id' => $otherChild->id,
+                'type' => AttendanceRecord::CheckIn,
+            ])->assertNotFound();
+    }
+
+    public function test_attendance_requires_staff_access(): void
+    {
+        [$school] = $this->createDemoRoster();
+
+        $this->get('/attendance')->assertRedirect('/login');
+
+        $this->actingAs($this->userWithRole($school, 'guardian'))
+            ->get('/attendance')
+            ->assertForbidden();
+
         $this->post('/attendance', [
-            'child_id' => $otherChild->id,
+            'child_id' => Child::query()->where('school_id', $school->id)->firstOrFail()->id,
             'type' => AttendanceRecord::CheckIn,
-        ])->assertNotFound();
+        ])->assertForbidden();
     }
 
     /**
@@ -114,5 +134,18 @@ class AttendanceTest extends TestCase
         ]);
 
         return [$school, $class, $child];
+    }
+
+    private function userWithRole(School $school, string $role): User
+    {
+        $user = User::factory()->create();
+
+        $user->schoolMemberships()->create([
+            'school_id' => $school->id,
+            'role' => $role,
+            'status' => 'active',
+        ]);
+
+        return $user;
     }
 }

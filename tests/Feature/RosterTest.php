@@ -7,6 +7,7 @@ use App\Models\Guardian;
 use App\Models\School;
 use App\Models\SchoolClass;
 use App\Models\StaffMember;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -58,7 +59,8 @@ class RosterTest extends TestCase
             'can_pick_up' => true,
         ]);
 
-        $this->get('/roster')
+        $this->actingAs($this->userWithRole($school, 'administrator'))
+            ->get('/roster')
             ->assertOk()
             ->assertSee('Little Seeds Preschool')
             ->assertSee('Sampaguita')
@@ -70,6 +72,36 @@ class RosterTest extends TestCase
 
     public function test_roster_preview_fails_closed_without_the_demo_school(): void
     {
-        $this->get('/roster')->assertNotFound();
+        $this->actingAs(User::factory()->create())
+            ->get('/roster')
+            ->assertForbidden();
+
+        $this->actingAs($this->userWithRole(School::factory()->create(), 'teacher'))
+            ->get('/roster')
+            ->assertNotFound();
+    }
+
+    public function test_roster_requires_staff_access(): void
+    {
+        $school = School::factory()->create(['slug' => 'little-seeds-preschool']);
+
+        $this->get('/roster')->assertRedirect('/login');
+
+        $this->actingAs($this->userWithRole($school, 'guardian'))
+            ->get('/roster')
+            ->assertForbidden();
+    }
+
+    private function userWithRole(School $school, string $role): User
+    {
+        $user = User::factory()->create();
+
+        $user->schoolMemberships()->create([
+            'school_id' => $school->id,
+            'role' => $role,
+            'status' => 'active',
+        ]);
+
+        return $user;
     }
 }
