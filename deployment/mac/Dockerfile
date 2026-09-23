@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev libic
     && rm -rf /var/lib/apt/lists/*
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf \
-    && printf '<Directory /var/www/html/public>\nAllowOverride All\nRequire all granted\n</Directory>\nSetEnv HTTPS on\n' > /etc/apache2/conf-available/sibol.conf \
+    && printf '<Directory /var/www/html/public>\nAllowOverride All\nRequire all granted\n</Directory>\n' > /etc/apache2/conf-available/sibol.conf \
     && a2enconf sibol
 COPY --chown=www-data:www-data release/ /var/www/html/
 RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
