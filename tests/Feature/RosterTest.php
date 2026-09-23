@@ -70,6 +70,52 @@ class RosterTest extends TestCase
             ->assertSee('Preview roster only');
     }
 
+    public function test_teacher_roster_only_shows_assigned_classes(): void
+    {
+        $school = School::factory()->create([
+            'name' => 'Little Seeds Preschool',
+            'slug' => 'little-seeds-preschool',
+        ]);
+
+        $sampaguita = SchoolClass::factory()->create([
+            'school_id' => $school->id,
+            'name' => 'Sampaguita',
+        ]);
+        $mango = SchoolClass::factory()->create([
+            'school_id' => $school->id,
+            'name' => 'Mango',
+        ]);
+
+        $teacher = StaffMember::factory()->create([
+            'school_id' => $school->id,
+            'name' => 'Teacher Ana Cruz',
+            'email' => 'teacher.ana@sibol.test',
+            'role' => 'teacher',
+        ]);
+        $sampaguita->staffMembers()->attach($teacher, ['assignment_role' => 'lead']);
+
+        Child::factory()->create([
+            'school_id' => $school->id,
+            'school_class_id' => $sampaguita->id,
+            'preferred_name' => 'Maya',
+            'last_name' => 'Dela Cruz',
+        ]);
+        Child::factory()->create([
+            'school_id' => $school->id,
+            'school_class_id' => $mango->id,
+            'preferred_name' => 'Lia',
+            'last_name' => 'Santos',
+        ]);
+
+        $this->actingAs($this->userWithRole($school, 'teacher', $teacher))
+            ->get('/roster')
+            ->assertOk()
+            ->assertSee('Sampaguita')
+            ->assertSee('Maya Dela Cruz')
+            ->assertDontSee('Mango')
+            ->assertDontSee('Lia Santos');
+    }
+
     public function test_roster_preview_fails_closed_without_the_demo_school(): void
     {
         $this->actingAs(User::factory()->create())
@@ -92,7 +138,7 @@ class RosterTest extends TestCase
             ->assertForbidden();
     }
 
-    private function userWithRole(School $school, string $role): User
+    private function userWithRole(School $school, string $role, mixed $source = null): User
     {
         $user = User::factory()->create();
 
@@ -100,6 +146,8 @@ class RosterTest extends TestCase
             'school_id' => $school->id,
             'role' => $role,
             'status' => 'active',
+            'source_type' => $source ? $source::class : null,
+            'source_id' => $source?->id,
         ]);
 
         return $user;
