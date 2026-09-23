@@ -57,6 +57,11 @@
                     </div>
                 </article>
 
+                <a href="{{ route('children.messages.index', $child) }}" class="rounded-3xl border border-[#E6DFD2] bg-white p-5 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                    Messages with {{ $child->preferred_name }}’s teachers
+                    <span class="mt-1 block text-xs font-normal leading-5 text-[#6D665C]">Ask a question or reply to a teacher note in one child-specific thread.</span>
+                </a>
+
                 <section>
                     <div class="flex items-end justify-between gap-3">
                         <div>

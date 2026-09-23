@@ -142,3 +142,36 @@ Expected result:
 Expected result:
 - The request is blocked with a forbidden response.
 - Parent dashboard and child pages continue to work.
+
+
+## SIB-09 — Child-specific messages
+
+### TC-SIB-09-01 — Parent can read and send a child message
+1. Log in as `Parent` with the demo PIN.
+2. Open `Maya Dela Cruz`.
+3. Open `Messages with Maya’s teachers`.
+4. Read the seeded teacher message.
+5. Type a short reply and send it.
+
+Expected result:
+- The thread opens at `/children/{id}/messages`.
+- Existing messages show sender, role, time, and body.
+- The new parent message appears in the thread after submit.
+
+### TC-SIB-09-02 — Assigned teacher can reply
+1. Log out, then log in as `Teacher` with the demo PIN.
+2. Open `View class roster`.
+3. Open messages for `Maya Dela Cruz`.
+4. Type a teacher reply and send it.
+
+Expected result:
+- Teacher Ana can open and post in Maya’s thread.
+- The message is labeled as a teacher message.
+
+### TC-SIB-09-03 — Parent cannot open another child’s thread
+1. Log in as `Parent`.
+2. Manually browse to another child message URL if known, such as Nico or Lia’s `/children/{id}/messages`.
+
+Expected result:
+- The request is blocked with `403 Forbidden`.
+- Maya’s own child page and message thread still work.

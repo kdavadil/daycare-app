@@ -60,6 +60,14 @@ class Child extends Model
     }
 
     /**
+     * @return HasMany<ChildMessage, $this>
+     */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(ChildMessage::class);
+    }
+
+    /**
      * @return HasOne<AttendanceRecord, $this>
      */
     public function latestAttendanceRecord(): HasOne

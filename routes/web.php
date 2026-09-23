@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\DemoPersonaController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\ChildHomeController;
+use App\Http\Controllers\ChildMessageController;
 use App\Http\Controllers\ClassCalendarController;
 use App\Http\Controllers\DailyUpdateController;
 use App\Http\Controllers\DashboardController;
@@ -19,6 +20,8 @@ Route::post('/auth/demo', DemoPersonaController::class)->middleware('guest')->na
 Route::post('/logout', [GoogleAuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
 Route::get('/children/{child}', ChildHomeController::class)->middleware('auth')->name('children.show');
+Route::get('/children/{child}/messages', [ChildMessageController::class, 'index'])->middleware('auth')->name('children.messages.index');
+Route::post('/children/{child}/messages', [ChildMessageController::class, 'store'])->middleware('auth')->name('children.messages.store');
 Route::get('/daily-updates/{journalEntry}/photo', [DailyUpdateController::class, 'photo'])->middleware('auth')->name('daily-updates.photo');
 Route::middleware(['auth', 'school.role:administrator,teacher'])->group(function (): void {
     Route::get('/roster', RosterController::class)->name('roster.index');

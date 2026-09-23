@@ -55,6 +55,14 @@ class School extends Model
     }
 
     /**
+     * @return HasMany<ChildMessage, $this>
+     */
+    public function childMessages(): HasMany
+    {
+        return $this->hasMany(ChildMessage::class);
+    }
+
+    /**
      * @return HasMany<SchoolUserMembership, $this>
      */
     public function userMemberships(): HasMany

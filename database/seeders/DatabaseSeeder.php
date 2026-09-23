@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AttendanceRecord;
 use App\Models\Child;
+use App\Models\ChildMessage;
 use App\Models\ClassCalendarEvent;
 use App\Models\Guardian;
 use App\Models\JournalEntry;
@@ -217,6 +218,28 @@ class DatabaseSeeder extends Seeder
         );
 
         $teacherUser = User::query()->where('email', 'teacher.ana@sibol.test')->firstOrFail();
+
+        $parentUser = User::query()->where('email', 'rose.delacruz@sibol.test')->firstOrFail();
+
+        ChildMessage::query()->updateOrCreate(
+            ['child_id' => $maya->id, 'body' => 'Good morning! Maya was excited to show her color sorting work today.'],
+            [
+                'school_id' => $school->id,
+                'sender_id' => $teacherUser->id,
+                'sender_role' => ChildMessage::Teacher,
+                'sent_at' => now('Asia/Manila')->setTime(11, 5),
+            ],
+        );
+
+        ChildMessage::query()->updateOrCreate(
+            ['child_id' => $maya->id, 'body' => 'Thank you, Teacher Ana. Please remind her that Lola will pick her up at 4 PM.'],
+            [
+                'school_id' => $school->id,
+                'sender_id' => $parentUser->id,
+                'sender_role' => ChildMessage::Guardian,
+                'sent_at' => now('Asia/Manila')->setTime(11, 12),
+            ],
+        );
 
         JournalEntry::query()->updateOrCreate(
             ['child_id' => $maya->id, 'title' => 'A little artist at work'],
