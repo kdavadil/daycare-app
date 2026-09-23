@@ -53,17 +53,21 @@
                         @if ($isTeacher)
                             <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Take attendance</a>
                             <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class roster</a>
-                            <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
-                                <p class="text-sm font-semibold text-[#2E2A24]">Post daily update</p>
-                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for photos, naps, meals, and notes.</p>
-                            </div>
+                            <a href="{{ route('daily-updates.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Post daily update</a>
                         @endif
 
                         @if ($isGuardian)
-                            <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
-                                <p class="text-sm font-semibold text-[#2E2A24]">Maya Dela Cruz</p>
-                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Checked in today at Little Seeds Preschool.</p>
-                            </div>
+                            @forelse ($guardianChildren as $child)
+                                <a href="{{ route('children.show', $child) }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                                    {{ $child->preferred_name }} {{ $child->last_name }}
+                                    <span class="mt-1 block text-xs font-normal leading-5 text-[#6D665C]">{{ $child->schoolClass->name }} · {{ $child->isCheckedIn() ? 'In school' : 'Not checked in' }}</span>
+                                </a>
+                            @empty
+                                <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
+                                    <p class="text-sm font-semibold text-[#2E2A24]">No linked children yet</p>
+                                    <p class="mt-1 text-xs leading-5 text-[#6D665C]">Ask the school to link your parent account to your child record.</p>
+                                </div>
+                            @endforelse
                             <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
                                 <p class="text-sm font-semibold text-[#2E2A24]">Pickup notes</p>
                                 <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for verified pickup contacts and teacher messages.</p>

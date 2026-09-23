@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\AttendanceRecord;
 use App\Models\Child;
 use App\Models\Guardian;
+use App\Models\JournalEntry;
 use App\Models\School;
 use App\Models\SchoolClass;
 use App\Models\SchoolUserMembership;
@@ -161,6 +162,36 @@ class DatabaseSeeder extends Seeder
                 'type' => AttendanceRecord::CheckIn,
                 'actor_name' => 'Teacher Ana Cruz',
                 'note' => 'Demo check-in',
+            ],
+        );
+
+        $teacherUser = User::query()->where('email', 'teacher.ana@sibol.test')->firstOrFail();
+
+        JournalEntry::query()->updateOrCreate(
+            ['child_id' => $maya->id, 'title' => 'A little artist at work'],
+            [
+                'school_id' => $school->id,
+                'school_class_id' => $sampaguita->id,
+                'author_id' => $teacherUser->id,
+                'category' => JournalEntry::LearningMoment,
+                'body' => 'Maya explored warm colors during our Sampaguita art table and proudly explained her sun drawing.',
+                'meal_amount' => null,
+                'occurred_at' => now('Asia/Manila')->setTime(9, 30),
+                'status' => 'published',
+            ],
+        );
+
+        JournalEntry::query()->updateOrCreate(
+            ['child_id' => $maya->id, 'title' => 'Merienda finished'],
+            [
+                'school_id' => $school->id,
+                'school_class_id' => $sampaguita->id,
+                'author_id' => $teacherUser->id,
+                'category' => JournalEntry::Meal,
+                'body' => 'Banana and pandesal were offered with water.',
+                'meal_amount' => 'All finished',
+                'occurred_at' => now('Asia/Manila')->setTime(10, 15),
+                'status' => 'published',
             ],
         );
     }

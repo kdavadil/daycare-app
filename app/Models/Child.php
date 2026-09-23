@@ -52,6 +52,14 @@ class Child extends Model
     }
 
     /**
+     * @return HasMany<JournalEntry, $this>
+     */
+    public function journalEntries(): HasMany
+    {
+        return $this->hasMany(JournalEntry::class);
+    }
+
+    /**
      * @return HasOne<AttendanceRecord, $this>
      */
     public function latestAttendanceRecord(): HasOne
