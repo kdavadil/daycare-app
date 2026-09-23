@@ -5,9 +5,21 @@
             <a href="{{ route('about') }}" class="rounded-xl border border-[#E6DFD2] px-4 py-2 text-sm font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
                 About
             </a>
-            <a href="{{ auth()->check() ? route('dashboard') : route('login') }}" class="rounded-xl bg-[#286446] px-4 py-2 text-sm font-semibold text-white underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
-                {{ auth()->check() ? 'Dashboard' : 'Sign in' }}
-            </a>
+            @auth
+                <a href="{{ route('dashboard') }}" class="rounded-xl bg-[#286446] px-4 py-2 text-sm font-semibold text-white underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                    Dashboard
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="rounded-xl border border-[#E6DFD2] px-4 py-2 text-sm font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                        Sign out
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="rounded-xl bg-[#286446] px-4 py-2 text-sm font-semibold text-white underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                    Sign in
+                </a>
+            @endauth
         </div>
     </div>
 
