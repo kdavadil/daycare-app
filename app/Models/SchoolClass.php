@@ -33,6 +33,14 @@ class SchoolClass extends Model
     }
 
     /**
+     * @return HasMany<ClassCalendarEvent, $this>
+     */
+    public function calendarEvents(): HasMany
+    {
+        return $this->hasMany(ClassCalendarEvent::class);
+    }
+
+    /**
      * @return BelongsToMany<StaffMember, $this>
      */
     public function staffMembers(): BelongsToMany

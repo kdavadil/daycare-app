@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\DemoPersonaController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\ChildHomeController;
+use App\Http\Controllers\ClassCalendarController;
 use App\Http\Controllers\DailyUpdateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RosterController;
@@ -22,6 +23,7 @@ Route::get('/daily-updates/{journalEntry}/photo', [DailyUpdateController::class,
 Route::middleware(['auth', 'school.role:administrator,teacher'])->group(function (): void {
     Route::get('/roster', RosterController::class)->name('roster.index');
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/class-calendar', [ClassCalendarController::class, 'index'])->name('class-calendar.index');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/daily-updates', [DailyUpdateController::class, 'index'])->name('daily-updates.index');
     Route::post('/daily-updates', [DailyUpdateController::class, 'store'])->name('daily-updates.store');

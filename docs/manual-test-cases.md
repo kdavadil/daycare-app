@@ -113,3 +113,32 @@ Expected result:
 
 Expected result:
 - Parent receives `403 Forbidden`.
+
+## Class calendar staff view
+
+### Admin sees all class events
+1. Log in with the Admin demo persona using the local demo PIN.
+2. From the dashboard, open `View class calendar`.
+3. Use Previous and Next to move between months.
+
+Expected result:
+- The calendar opens at `/class-calendar`.
+- The page shows `Class calendar`, the current month, and seeded events for both Sampaguita and Mango classes when those events fall in the selected month.
+- The upcoming event list shows the class name, event type, date, and time where available.
+
+### Teacher sees only assigned class events
+1. Log out, then log in with the Teacher demo persona using the local demo PIN.
+2. From the dashboard, open `View class calendar`.
+
+Expected result:
+- The calendar opens successfully.
+- Teacher Ana sees Sampaguita events.
+- Teacher Ana does not see Mango-only events.
+
+### Parent cannot open the staff calendar
+1. Log out, then log in with the Parent demo persona using the local demo PIN.
+2. Manually browse to `/class-calendar`.
+
+Expected result:
+- The request is blocked with a forbidden response.
+- Parent dashboard and child pages continue to work.

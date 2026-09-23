@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AttendanceRecord;
 use App\Models\Child;
+use App\Models\ClassCalendarEvent;
 use App\Models\Guardian;
 use App\Models\JournalEntry;
 use App\Models\School;
@@ -153,6 +154,56 @@ class DatabaseSeeder extends Seeder
                 ],
             );
         }
+
+        $today = now('Asia/Manila')->startOfDay();
+
+        ClassCalendarEvent::query()->updateOrCreate(
+            ['school_class_id' => $sampaguita->id, 'title' => 'Sampaguita art day'],
+            [
+                'school_id' => $school->id,
+                'description' => 'Children will explore colors and leaf prints. Please send an extra shirt.',
+                'event_type' => ClassCalendarEvent::Activity,
+                'event_date' => $today->copy()->next('Wednesday')->toDateString(),
+                'starts_at' => $today->copy()->next('Wednesday')->setTime(9, 0),
+                'ends_at' => $today->copy()->next('Wednesday')->setTime(10, 0),
+            ],
+        );
+
+        ClassCalendarEvent::query()->updateOrCreate(
+            ['school_class_id' => $sampaguita->id, 'title' => 'Family day practice'],
+            [
+                'school_id' => $school->id,
+                'description' => 'Short classroom practice for the upcoming family day song.',
+                'event_type' => ClassCalendarEvent::SchoolEvent,
+                'event_date' => $today->copy()->addDays(8)->toDateString(),
+                'starts_at' => $today->copy()->addDays(8)->setTime(10, 30),
+                'ends_at' => $today->copy()->addDays(8)->setTime(11, 0),
+            ],
+        );
+
+        ClassCalendarEvent::query()->updateOrCreate(
+            ['school_class_id' => $mango->id, 'title' => 'Mango garden walk'],
+            [
+                'school_id' => $school->id,
+                'description' => 'Kinder 1 will visit the garden and water the herbs after morning circle.',
+                'event_type' => ClassCalendarEvent::Activity,
+                'event_date' => $today->copy()->addDays(3)->toDateString(),
+                'starts_at' => $today->copy()->addDays(3)->setTime(9, 15),
+                'ends_at' => $today->copy()->addDays(3)->setTime(9, 45),
+            ],
+        );
+
+        ClassCalendarEvent::query()->updateOrCreate(
+            ['school_class_id' => $mango->id, 'title' => 'Bring favorite storybook'],
+            [
+                'school_id' => $school->id,
+                'description' => 'Reminder for show-and-tell. Label the book with the child’s name.',
+                'event_type' => ClassCalendarEvent::Reminder,
+                'event_date' => $today->copy()->addDays(10)->toDateString(),
+                'starts_at' => null,
+                'ends_at' => null,
+            ],
+        );
 
         AttendanceRecord::query()->updateOrCreate(
             ['child_id' => $maya->id, 'occurred_at' => now('Asia/Manila')->setTime(8, 4)],
