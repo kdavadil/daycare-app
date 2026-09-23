@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Child;
+use App\Models\Guardian;
 use App\Models\School;
+use App\Models\SchoolClass;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -31,6 +34,27 @@ class DemoPersonaTest extends TestCase
         config()->set('services.demo_login.pin', 'testing-pin');
 
         $school = School::factory()->create(['name' => 'Little Seeds Preschool']);
+        $class = SchoolClass::factory()->create([
+            'school_id' => $school->id,
+            'name' => 'Sampaguita',
+        ]);
+        $child = Child::factory()->create([
+            'school_id' => $school->id,
+            'school_class_id' => $class->id,
+            'first_name' => 'Maya',
+            'last_name' => 'Dela Cruz',
+            'preferred_name' => 'Maya',
+        ]);
+        $guardian = Guardian::factory()->create([
+            'school_id' => $school->id,
+            'email' => 'rose.delacruz@sibol.test',
+        ]);
+        $child->guardians()->attach($guardian, [
+            'relationship' => 'Mother',
+            'is_primary' => true,
+            'can_pick_up' => true,
+        ]);
+
         $user = User::factory()->create([
             'name' => 'Mia Reyes',
             'email' => 'admin.mia@sibol.test',
@@ -68,6 +92,27 @@ class DemoPersonaTest extends TestCase
     public function test_parent_dashboard_shows_family_features_without_staff_actions(): void
     {
         $school = School::factory()->create(['name' => 'Little Seeds Preschool']);
+        $class = SchoolClass::factory()->create([
+            'school_id' => $school->id,
+            'name' => 'Sampaguita',
+        ]);
+        $child = Child::factory()->create([
+            'school_id' => $school->id,
+            'school_class_id' => $class->id,
+            'first_name' => 'Maya',
+            'last_name' => 'Dela Cruz',
+            'preferred_name' => 'Maya',
+        ]);
+        $guardian = Guardian::factory()->create([
+            'school_id' => $school->id,
+            'email' => 'rose.delacruz@sibol.test',
+        ]);
+        $child->guardians()->attach($guardian, [
+            'relationship' => 'Mother',
+            'is_primary' => true,
+            'can_pick_up' => true,
+        ]);
+
         $user = User::factory()->create([
             'name' => 'Rose Dela Cruz',
             'email' => 'rose.delacruz@sibol.test',

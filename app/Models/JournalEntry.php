@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Database\Factories\JournalEntryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['school_id', 'school_class_id', 'child_id', 'author_id', 'category', 'title', 'body', 'meal_amount', 'photo_path', 'photo_original_name', 'occurred_at', 'status'])]
 class JournalEntry extends Model
 {
+    /** @use HasFactory<JournalEntryFactory> */
+    use HasFactory;
+
     public const string LearningMoment = 'learning_moment';
 
     public const string Activity = 'activity';

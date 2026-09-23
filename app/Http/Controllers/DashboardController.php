@@ -27,6 +27,10 @@ class DashboardController extends Controller
                     if ($membership->source_type && $membership->source_id) {
                         $query->orWhere('guardians.id', $membership->source_id);
                     }
+
+                    if (! $membership->source_type && $membership->source_id) {
+                        $query->orWhere('guardians.id', $membership->source_id);
+                    }
                 })
                 ->with(['school', 'schoolClass', 'latestAttendanceRecord'])
                 ->orderBy('preferred_name')
