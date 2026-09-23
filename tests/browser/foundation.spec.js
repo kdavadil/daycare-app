@@ -12,7 +12,7 @@ test('mobile foundation performs a Livewire request without overflow', async ({ 
   await page.getByLabel('Persona').selectOption('teacher');
   await page.getByLabel('Demo PIN').fill('playwright-demo');
   await page.getByRole('button', { name: 'Open demo dashboard' }).click();
-  await expect(page.getByRole('heading', { name: 'Good morning, Teacher Ana.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Hi, Teacher Ana Cruz.' })).toBeVisible();
 
   await expect(page.getByRole('link', { name: /Roster/ })).toBeVisible();
   await page.getByRole('link', { name: /Roster/ }).click();
