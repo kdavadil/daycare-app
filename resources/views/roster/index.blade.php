@@ -67,7 +67,9 @@
                                         <div>
                                             <h3 class="text-base font-semibold text-[#2E2A24]">{{ $child->preferred_name ?? $child->first_name }} {{ $child->last_name }}</h3>
                                             <p class="mt-1 text-sm text-[#6D665C]">Guardian: {{ $child->guardians->map(fn ($guardian) => $guardian->first_name.' '.$guardian->last_name)->join(', ') }}</p>
-                                            <a href="{{ route('children.messages.index', $child) }}" class="mt-3 inline-flex rounded-xl border border-[#E6DFD2] bg-white px-3 py-2 text-xs font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open messages</a>
+                                            @if (config('features.messaging'))
+                                                <a href="{{ route('children.messages.index', $child) }}" class="mt-3 inline-flex rounded-xl border border-[#E6DFD2] bg-white px-3 py-2 text-xs font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open messages</a>
+                                            @endif
                                         </div>
                                         <span class="rounded-full {{ $isCheckedIn ? 'bg-[#E9F3EE] text-[#286446]' : 'bg-[#F4C95D] text-[#3B3014]' }} px-3 py-1.5 text-xs font-semibold">{{ $isCheckedIn ? 'In school' : ucfirst($child->status) }}</span>
                                     </div>
@@ -77,7 +79,9 @@
                     </section>
                 @endforeach
 
-                <a href="{{ route('attendance.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#286446] px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open attendance</a>
+                @if (config('features.attendance'))
+                    <a href="{{ route('attendance.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#286446] px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Open attendance</a>
+                @endif
                 <p class="text-xs leading-5 text-[#6D665C]">Preview roster only. Editing, invitations, and account permissions come next.</p>
             </div>
         </section>

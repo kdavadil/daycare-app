@@ -16,7 +16,7 @@ class FoundationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_foundation_renders_without_exposing_account_registration(): void
+    public function test_public_preview_never_exposes_child_or_attendance_records(): void
     {
         $school = School::factory()->create(['slug' => 'little-seeds-preschool']);
         $class = SchoolClass::factory()->create(['school_id' => $school->id]);
@@ -40,7 +40,10 @@ class FoundationTest extends TestCase
             ->assertOk()
             ->assertSee('Sibol')
             ->assertSee('About')
-            ->assertSee('Maya is checked in');
+            ->assertSee('This public preview never shows real child or family records.')
+            ->assertDontSee('Maya')
+            ->assertDontSee('Dela Cruz')
+            ->assertDontSee('Checked in');
 
         $this->get('/register')->assertNotFound();
     }

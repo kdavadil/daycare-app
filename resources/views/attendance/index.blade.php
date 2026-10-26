@@ -15,7 +15,9 @@
             <a href="{{ route('home') }}" class="rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
                 <x-brand-mark />
             </a>
-            <a href="{{ route('roster.index') }}" class="rounded-xl border border-[#E6DFD2] bg-white px-4 py-2 font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Roster</a>
+            @if (config('features.roster'))
+                <a href="{{ route('roster.index') }}" class="rounded-xl border border-[#E6DFD2] bg-white px-4 py-2 font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Roster</a>
+            @endif
         </nav>
 
         <section class="overflow-hidden rounded-[2rem] border border-[#E6DFD2] bg-white shadow-sm">

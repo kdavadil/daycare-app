@@ -13,7 +13,9 @@
     <main class="mx-auto max-w-lg px-5 py-8">
         <nav class="mb-6 flex items-center justify-between text-sm">
             <a href="{{ route('dashboard') }}" class="rounded-xl border border-[#E6DFD2] bg-white px-4 py-2 font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Dashboard</a>
-            <a href="{{ route('attendance.index') }}" class="rounded-xl border border-[#E6DFD2] bg-white px-4 py-2 font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Attendance</a>
+            @if (config('features.attendance'))
+                <a href="{{ route('attendance.index') }}" class="rounded-xl border border-[#E6DFD2] bg-white px-4 py-2 font-semibold text-[#286446] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Attendance</a>
+            @endif
         </nav>
 
         <section class="overflow-hidden rounded-[2rem] border border-[#E6DFD2] bg-white shadow-sm">

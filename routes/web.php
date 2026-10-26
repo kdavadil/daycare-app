@@ -19,15 +19,15 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->
 Route::post('/auth/demo', DemoPersonaController::class)->middleware('guest')->name('auth.demo');
 Route::post('/logout', [GoogleAuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
-Route::get('/children/{child}', ChildHomeController::class)->middleware('auth')->name('children.show');
-Route::get('/children/{child}/messages', [ChildMessageController::class, 'index'])->middleware('auth')->name('children.messages.index');
-Route::post('/children/{child}/messages', [ChildMessageController::class, 'store'])->middleware('auth')->name('children.messages.store');
-Route::get('/daily-updates/{journalEntry}/photo', [DailyUpdateController::class, 'photo'])->middleware('auth')->name('daily-updates.photo');
+Route::get('/children/{child}', ChildHomeController::class)->middleware(['auth', 'feature:family_portal'])->name('children.show');
+Route::get('/children/{child}/messages', [ChildMessageController::class, 'index'])->middleware(['auth', 'feature:messaging'])->name('children.messages.index');
+Route::post('/children/{child}/messages', [ChildMessageController::class, 'store'])->middleware(['auth', 'feature:messaging'])->name('children.messages.store');
+Route::get('/daily-updates/{journalEntry}/photo', [DailyUpdateController::class, 'photo'])->middleware(['auth', 'feature:daily_updates'])->name('daily-updates.photo');
 Route::middleware(['auth', 'school.role:administrator,teacher'])->group(function (): void {
-    Route::get('/roster', RosterController::class)->name('roster.index');
-    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/class-calendar', [ClassCalendarController::class, 'index'])->name('class-calendar.index');
-    Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
-    Route::get('/daily-updates', [DailyUpdateController::class, 'index'])->name('daily-updates.index');
-    Route::post('/daily-updates', [DailyUpdateController::class, 'store'])->name('daily-updates.store');
+    Route::middleware('feature:roster')->get('/roster', RosterController::class)->name('roster.index');
+    Route::middleware('feature:attendance')->get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::middleware('feature:class_calendar')->get('/class-calendar', [ClassCalendarController::class, 'index'])->name('class-calendar.index');
+    Route::middleware('feature:attendance')->post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+    Route::middleware('feature:daily_updates')->get('/daily-updates', [DailyUpdateController::class, 'index'])->name('daily-updates.index');
+    Route::middleware('feature:daily_updates')->post('/daily-updates', [DailyUpdateController::class, 'store'])->name('daily-updates.store');
 });

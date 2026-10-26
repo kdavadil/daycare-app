@@ -42,40 +42,60 @@
 
                     <div class="grid gap-3">
                         @if ($isAdmin)
-                            <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Manage roster</a>
-                            <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Review attendance</a>
-                            <a href="{{ route('class-calendar.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class calendar</a>
-                            <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
-                                <p class="text-sm font-semibold text-[#2E2A24]">Invite staff and families</p>
-                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for the next admin story.</p>
-                            </div>
+                            @if (config('features.roster'))
+                                <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Manage roster</a>
+                            @endif
+                            @if (config('features.attendance'))
+                                <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Review attendance</a>
+                            @endif
+                            @if (config('features.class_calendar'))
+                                <a href="{{ route('class-calendar.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class calendar</a>
+                            @endif
                         @endif
 
                         @if ($isTeacher)
-                            <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Take attendance</a>
-                            <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class roster</a>
-                            <a href="{{ route('daily-updates.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Post daily update</a>
-                            <a href="{{ route('class-calendar.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class calendar</a>
+                            @if (config('features.attendance'))
+                                <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Take attendance</a>
+                            @endif
+                            @if (config('features.roster'))
+                                <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class roster</a>
+                            @endif
+                            @if (config('features.daily_updates'))
+                                <a href="{{ route('daily-updates.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">Post daily update</a>
+                            @endif
+                            @if (config('features.class_calendar'))
+                                <a href="{{ route('class-calendar.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">View class calendar</a>
+                            @endif
                         @endif
 
                         @if ($isGuardian)
-                            @forelse ($guardianChildren as $child)
-                                <a href="{{ route('children.show', $child) }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
-                                    {{ $child->preferred_name }} {{ $child->last_name }}
-                                    <span class="mt-1 block text-xs font-normal leading-5 text-[#6D665C]">{{ $child->schoolClass->name }} · {{ $child->isCheckedIn() ? 'In school' : 'Not checked in' }}</span>
-                                </a>
-                            @empty
-                                <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
-                                    <p class="text-sm font-semibold text-[#2E2A24]">No linked children yet</p>
-                                    <p class="mt-1 text-xs leading-5 text-[#6D665C]">Ask the school to link your parent account to your child record.</p>
-                                </div>
-                            @endforelse
-                            <div class="rounded-2xl border border-[#E6DFD2] bg-[#FBFAF6] p-4">
-                                <p class="text-sm font-semibold text-[#2E2A24]">Pickup notes</p>
-                                <p class="mt-1 text-xs leading-5 text-[#6D665C]">Placeholder for verified pickup contacts and teacher messages.</p>
-                            </div>
+                            @if (config('features.family_portal'))
+                                @forelse ($guardianChildren as $child)
+                                    <a href="{{ route('children.show', $child) }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                                        {{ $child->preferred_name }} {{ $child->last_name }}
+                                        <span class="mt-1 block text-xs font-normal leading-5 text-[#6D665C]">{{ $child->schoolClass->name }} · {{ $child->isCheckedIn() ? 'In school' : 'Not checked in' }}</span>
+                                    </a>
+                                @empty
+                                    <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
+                                        <p class="text-sm font-semibold text-[#2E2A24]">No linked children yet</p>
+                                        <p class="mt-1 text-xs leading-5 text-[#6D665C]">Ask the school to link your parent account to your child record.</p>
+                                    </div>
+                                @endforelse
+                            @endif
                         @endif
                     </div>
+                    @if (($isAdmin || $isTeacher) && ! config('features.roster') && ! config('features.attendance') && ! config('features.daily_updates') && ! config('features.class_calendar'))
+                        <div class="rounded-2xl bg-[#FFF1C7] p-4">
+                            <p class="text-sm font-semibold text-[#3B3014]">Staff tools are being prepared.</p>
+                            <p class="mt-2 text-sm leading-6 text-[#6D665C]">Your account is linked to {{ $memberships->first()->school->name }}. School tools will appear here when they are ready for the pilot.</p>
+                        </div>
+                    @endif
+                    @if ($isGuardian && ! config('features.family_portal'))
+                        <div class="rounded-2xl bg-[#FFF1C7] p-4">
+                            <p class="text-sm font-semibold text-[#3B3014]">Family tools are being prepared.</p>
+                            <p class="mt-2 text-sm leading-6 text-[#6D665C]">Your account is linked to your school. Family updates will appear here when the pilot is ready.</p>
+                        </div>
+                    @endif
                 @else
                     <div class="rounded-2xl bg-[#FFF1C7] p-4">
                         <p class="text-sm font-semibold text-[#3B3014]">Your Google account is signed in, but it is not linked to a school yet.</p>

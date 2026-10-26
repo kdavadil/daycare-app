@@ -128,7 +128,6 @@ class DemoPersonaTest extends TestCase
             ->assertOk()
             ->assertSee('Parent or guardian')
             ->assertSee('Maya Dela Cruz')
-            ->assertSee('Pickup notes')
             ->assertDontSee('Manage roster')
             ->assertDontSee('Take attendance');
     }

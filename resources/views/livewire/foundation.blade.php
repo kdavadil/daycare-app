@@ -42,38 +42,18 @@
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">Today</p>
-                    <h2 class="mt-2 text-lg font-semibold text-[#2E2A24]">
-                        @if ($child?->isCheckedIn())
-                            {{ $child->preferred_name ?? $child->first_name }} is checked in
-                        @else
-                            Attendance is ready
-                        @endif
-                    </h2>
+                    <h2 class="mt-2 text-lg font-semibold text-[#2E2A24]">A calmer connection between school and home</h2>
                 </div>
                 <span class="rounded-full bg-[#E9F3EE] px-3 py-1.5 text-xs font-semibold text-[#286446]">
-                    @if ($child?->latestAttendanceRecord)
-                        {{ $child->latestAttendanceRecord->occurred_at->timezone('Asia/Manila')->format('g:i A') }}
-                    @else
-                        Preview
-                    @endif
+                    Pilot preview
                 </span>
             </div>
-            <p class="mt-3 text-sm leading-6 text-[#6D665C]">Daily updates, pickup notes, and school messages will appear here once accounts are ready.</p>
+            <p class="mt-3 text-sm leading-6 text-[#6D665C]">School tools are being prepared. This public preview never shows real child or family records.</p>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
-            <a href="{{ route('roster.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">Next</p>
-                <p class="mt-2 text-sm font-semibold text-[#2E2A24]">Roster</p>
-            </a>
-            <a href="{{ route('attendance.index') }}" class="rounded-2xl border border-[#E6DFD2] bg-white p-4 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">Now</p>
-                <p class="mt-2 text-sm font-semibold text-[#2E2A24]">Attendance</p>
-            </a>
-            <div class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">Soon</p>
-                <p class="mt-2 text-sm font-semibold text-[#2E2A24]">Fees</p>
-            </div>
+        <div class="rounded-2xl border border-[#E6DFD2] bg-white p-5">
+            <p class="text-xs font-semibold uppercase tracking-widest text-[#6D665C]">In progress</p>
+            <p class="mt-2 text-sm leading-6 text-[#2E2A24]">School tools are being prepared for the pilot. No child or payment information is shown on this preview.</p>
         </div>
 
         <p class="text-xs text-[#6D665C]" role="status">{{ $locale === 'en' ? 'Preview - No real child or payment data' : 'Preview - Walang tunay na datos ng bata o bayad' }}</p>

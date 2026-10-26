@@ -37,6 +37,8 @@ Set environment secrets through GitHub's UI or secure local tooling:
 
 Never paste private keys into chat. The workflow uses strict host-key checking and does not run ssh-keyscan to trust an unverified host. The release workflow has read-only repository permissions. Production credentials live on the server in the shared `.env`, never inside the artifact.
 
+Production feature switches in `deployment/.env.production.example` default to disabled. This hides and returns 404 for the roster, attendance, class calendar, daily updates and photos, family portal, and child messaging until each story is ready for production. Local and test environments keep these features enabled by default. The public landing preview never queries or displays child records. Keep the switches disabled in the production shared `.env`; the app reads them through Laravel config, so a release or config-cache rebuild is required after changing them.
+
 ## Server preparation — adapt after the actual target is known
 
 Prerequisites: supported Linux/systemd, Nginx, PHP 8.4 CLI/FPM with required extensions, PostgreSQL 17, curl, GNU tar/coreutils/flock, domain DNS, valid HTTPS certificates, firewall, off-server backups, and a restricted deployment account. Composer is used in CI and is not needed to install dependencies on the server.

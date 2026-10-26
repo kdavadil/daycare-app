@@ -57,52 +57,56 @@
                     </div>
                 </article>
 
-                <a href="{{ route('children.messages.index', $child) }}" class="rounded-3xl border border-[#E6DFD2] bg-white p-5 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
-                    Messages with {{ $child->preferred_name }}’s teachers
-                    <span class="mt-1 block text-xs font-normal leading-5 text-[#6D665C]">Ask a question or reply to a teacher note in one child-specific thread.</span>
-                </a>
+                @if (config('features.messaging'))
+                    <a href="{{ route('children.messages.index', $child) }}" class="rounded-3xl border border-[#E6DFD2] bg-white p-5 text-sm font-semibold text-[#2E2A24] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#286446]">
+                        Messages with {{ $child->preferred_name }}’s teachers
+                        <span class="mt-1 block text-xs font-normal leading-5 text-[#6D665C]">Ask a question or reply to a teacher note in one child-specific thread.</span>
+                    </a>
+                @endif
 
-                <section>
-                    <div class="flex items-end justify-between gap-3">
-                        <div>
-                            <p class="text-xs font-semibold tracking-widest text-[#286446] uppercase">Daily journal</p>
-                            <h2 class="mt-2 text-xl font-semibold text-[#2E2A24]">Latest updates</h2>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 grid gap-4">
-                        @forelse ($child->journalEntries as $entry)
-                            <article class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <p class="text-xs font-semibold tracking-widest text-[#286446] uppercase">{{ $entry->categoryLabel() }}</p>
-                                        <h3 class="mt-1 text-base font-semibold text-[#2E2A24]">{{ $entry->title }}</h3>
-                                    </div>
-                                    <time class="text-right text-xs leading-5 text-[#6D665C]">{{ $entry->occurred_at->timezone($child->school->timezone)->format('g:i A') }}</time>
-                                </div>
-
-                                @if ($entry->photo_path)
-                                    <img src="{{ route('daily-updates.photo', $entry) }}" alt="Photo for {{ $entry->title }}" class="mt-3 aspect-[4/3] w-full rounded-2xl object-cover">
-                                @endif
-
-                                @if ($entry->body)
-                                    <p class="mt-3 text-sm leading-6 text-[#6D665C]">{{ $entry->body }}</p>
-                                @endif
-
-                                @if ($entry->meal_amount)
-                                    <p class="mt-3 rounded-xl bg-[#FFF1C7] p-3 text-xs font-semibold text-[#3B3014]">Meal amount: {{ $entry->meal_amount }}</p>
-                                @endif
-
-                                <p class="mt-3 text-xs leading-5 text-[#6D665C]">Posted by {{ $entry->author->name }}</p>
-                            </article>
-                        @empty
-                            <div class="rounded-2xl bg-[#FFF1C7] p-4">
-                                <p class="text-sm font-semibold text-[#3B3014]">No daily updates yet.</p>
-                                <p class="mt-2 text-sm leading-6 text-[#6D665C]">Teacher notes, care logs, and photos will appear here after they are posted.</p>
+                @if (config('features.daily_updates'))
+                    <section>
+                        <div class="flex items-end justify-between gap-3">
+                            <div>
+                                <p class="text-xs font-semibold tracking-widest text-[#286446] uppercase">Daily journal</p>
+                                <h2 class="mt-2 text-xl font-semibold text-[#2E2A24]">Latest updates</h2>
                             </div>
-                        @endforelse
-                    </div>
-                </section>
+                        </div>
+
+                        <div class="mt-4 grid gap-4">
+                            @forelse ($child->journalEntries as $entry)
+                                <article class="rounded-2xl border border-[#E6DFD2] bg-white p-4">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-xs font-semibold tracking-widest text-[#286446] uppercase">{{ $entry->categoryLabel() }}</p>
+                                            <h3 class="mt-1 text-base font-semibold text-[#2E2A24]">{{ $entry->title }}</h3>
+                                        </div>
+                                        <time class="text-right text-xs leading-5 text-[#6D665C]">{{ $entry->occurred_at->timezone($child->school->timezone)->format('g:i A') }}</time>
+                                    </div>
+
+                                    @if ($entry->photo_path)
+                                        <img src="{{ route('daily-updates.photo', $entry) }}" alt="Photo for {{ $entry->title }}" class="mt-3 aspect-[4/3] w-full rounded-2xl object-cover">
+                                    @endif
+
+                                    @if ($entry->body)
+                                        <p class="mt-3 text-sm leading-6 text-[#6D665C]">{{ $entry->body }}</p>
+                                    @endif
+
+                                    @if ($entry->meal_amount)
+                                        <p class="mt-3 rounded-xl bg-[#FFF1C7] p-3 text-xs font-semibold text-[#3B3014]">Meal amount: {{ $entry->meal_amount }}</p>
+                                    @endif
+
+                                    <p class="mt-3 text-xs leading-5 text-[#6D665C]">Posted by {{ $entry->author->name }}</p>
+                                </article>
+                            @empty
+                                <div class="rounded-2xl bg-[#FFF1C7] p-4">
+                                    <p class="text-sm font-semibold text-[#3B3014]">No daily updates yet.</p>
+                                    <p class="mt-2 text-sm leading-6 text-[#6D665C]">Teacher notes, care logs, and photos will appear here after they are posted.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </section>
+                @endif
             </div>
         </section>
     </main>

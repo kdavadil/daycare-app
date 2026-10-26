@@ -16,12 +16,15 @@ class ChildHomeController extends Controller
             'school',
             'schoolClass',
             'latestAttendanceRecord',
-            'journalEntries' => fn ($query) => $query
+        ]);
+
+        if (config('features.daily_updates')) {
+            $child->load(['journalEntries' => fn ($query) => $query
                 ->with('author')
                 ->where('status', 'published')
                 ->latest('occurred_at')
-                ->limit(10),
-        ]);
+                ->limit(10)]);
+        }
 
         abort_unless($this->canViewChild($request, $child), 403);
 
