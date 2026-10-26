@@ -51,6 +51,12 @@ jobs:
           composer validate --strict
           composer install --no-interaction --prefer-dist --no-progress
           npm ci
+      - name: Verify feature-gate defaults by environment
+        run: |
+          for environment in production staging; do
+            APP_ENV="$environment" php -r 'require "vendor/autoload.php"; $features = require "config/features.php"; if (in_array(true, $features, true)) { fwrite(STDERR, "Features must default off in production and staging.\n"); exit(1); }'
+          done
+          APP_ENV=testing php -r 'require "vendor/autoload.php"; $features = require "config/features.php"; if (in_array(false, $features, true)) { fwrite(STDERR, "Features must default on in testing.\n"); exit(1); }'
       - name: Prepare test environment
         run: |
           cp .env.testing.example .env

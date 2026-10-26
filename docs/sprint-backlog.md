@@ -6,7 +6,7 @@ For a one-month build, I’d target a **Sibol pilot with one preschool**, coveri
 
 **Planning assumptions:** four one-week sprints; two full-time engineers; part-time design/product and QA support; a responsive web app/PWA for parents and staff. Native app-store releases would be a follow-up. With one engineer, we should reduce scope.
 
-All estimates below are relative story points, not days. The proposed **80-point backlog is provisional** until the team checks its capacity.
+All estimates below are relative story points, not days. The proposed **82-point backlog is provisional** until the team checks its capacity.
 
 ### MVP boundaries
 
@@ -57,7 +57,7 @@ For the pilot, parents can record a payment made through the school’s existing
 **Sprint demo:** Approve Lola Rose, assign her for pickup, record the handoff, issue a ₱6,850 invoice, and verify a submitted payment.
 
 ### Sprint 4 — Localization, reliability, and pilot launch
-**Goal:** Real school staff and families can use the app reliably on their phones. **20 points**
+**Goal:** Real school staff and families can use the app reliably on their phones. **22 points**
 
 Reserve roughly half this sprint’s effort for validation and fixes rather than adding features.
 
@@ -69,6 +69,7 @@ Reserve roughly half this sprint’s effort for validation and fixes rather than
 | SIB-20 | As the delivery team, we want a recoverable production environment so we can support the pilot. | Separate staging/production environments; error monitoring; automated backups with a tested restore; deployment rollback procedure; named support owner. | 3 |
 | SIB-21 | As a pilot user, I want the main workflows to work on my phone so I can rely on Sibol during a school day. | Parent/staff acceptance testing covers the full workflow; access-control and billing calculations have automated tests; target mobile browsers are checked; launch-blocking defects are fixed. | 5 |
 | SIB-22 | As school staff, I want guided onboarding so our first week runs smoothly. | Pilot roster is checked; invitations are ready; staff receive a short guide and walkthrough; a support channel and pilot feedback process are established. | 3 |
+| SIB-23 | As a prospective school owner or parent, I want an About page so I can understand Sibol's origin and mission before trusting the product. | Public About page is reachable from the preview home screen; placeholder origin copy is clearly marked; page explains the Philippine preschool focus; no real child, parent, staff, or payment data is requested. | 2 |
 
 **Sprint demo:** Run a full school day with pilot users—from check-in through updates, messaging, payment review, and pickup.
 
